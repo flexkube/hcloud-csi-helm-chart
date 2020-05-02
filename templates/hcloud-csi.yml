@@ -68,6 +68,10 @@ rules:
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents"]
     verbs: ["get", "list"]
+  # For HA setups.
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get","create", "list", "update"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -82,7 +86,7 @@ roleRef:
   name: hcloud-csi
   apiGroup: rbac.authorization.k8s.io
 ---
-kind: StatefulSet
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: hcloud-csi-controller
@@ -90,20 +94,21 @@ spec:
   selector:
     matchLabels:
       app: hcloud-csi-controller
-  serviceName: hcloud-csi-controller
   replicas: 1
   template:
     metadata:
       labels:
         app: hcloud-csi-controller
     spec:
-      serviceAccount: hcloud-csi
+      serviceAccountName: hcloud-csi
       containers:
         - name: csi-attacher
           image: quay.io/k8scsi/csi-attacher:v1.2.1
           args:
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
             - --v=5
+            - --leader-election
+            - --leader-election-type=leases
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/
@@ -117,6 +122,7 @@ spec:
           args:
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
             - --v=5
+            - --leader-election
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/
@@ -132,6 +138,8 @@ spec:
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
             - --feature-gates=Topology=true
             - --v=5
+            - --enable-leader-election
+            - --leader-election-type=leases
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/
