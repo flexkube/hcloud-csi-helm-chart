@@ -9,7 +9,7 @@ spec:
   privileged: true
   allowPrivilegeEscalation: true
   allowedCapabilities:
-  - CAP_SYS_ADMIN
+  - SYS_ADMIN
   requiredDropCapabilities:
     - ALL
   volumes:
