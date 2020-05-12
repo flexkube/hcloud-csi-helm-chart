@@ -106,7 +106,7 @@ spec:
           image: quay.io/k8scsi/csi-attacher:v2.2.0
           args:
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
-            - --v=5
+            - --v=4
             - --leader-election
           volumeMounts:
             - name: socket-dir
@@ -120,7 +120,7 @@ spec:
           image: quay.io/k8scsi/csi-resizer:v0.3.0
           args:
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
-            - --v=5
+            - --v=4
             - --leader-election
           volumeMounts:
             - name: socket-dir
@@ -136,7 +136,7 @@ spec:
             - --provisioner=csi.hetzner.cloud
             - --csi-address=/var/lib/csi/sockets/pluginproxy/csi.sock
             - --feature-gates=Topology=true
-            - --v=5
+            - --v=4
             - --enable-leader-election
             - --leader-election-type=leases
           volumeMounts:
