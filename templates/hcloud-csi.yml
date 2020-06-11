@@ -101,6 +101,9 @@ spec:
         app: hcloud-csi-controller
     spec:
       serviceAccountName: hcloud-csi
+      priorityClassName: system-node-critical
+      tolerations:
+        - operator: Exists
       containers:
         - name: csi-attacher
           image: quay.io/k8scsi/csi-attacher:v2.2.0
@@ -116,6 +119,9 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
+          resources:
+            requests:
+              memory: 10Mi
         - name: csi-resizer
           image: quay.io/k8scsi/csi-resizer:v0.3.0
           args:
@@ -130,6 +136,9 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
+          resources:
+            requests:
+              memory: 10Mi
         - name: csi-provisioner
           image: quay.io/k8scsi/csi-provisioner:v1.6.0
           args:
@@ -147,6 +156,9 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
+          resources:
+            requests:
+              memory: 10Mi
         - name: hcloud-csi-driver
           image: hetznercloud/hcloud-csi-driver:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
@@ -182,6 +194,9 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
+          resources:
+            requests:
+              memory: 10Mi
         - name: liveness-probe
           imagePullPolicy: Always
           image: quay.io/k8scsi/livenessprobe:v1.1.0
@@ -190,6 +205,9 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/csi/sockets/pluginproxy/
               name: socket-dir
+          resources:
+            requests:
+              memory: 5Mi
       volumes:
         - name: socket-dir
           emptyDir: {}
@@ -210,6 +228,9 @@ spec:
         app: hcloud-csi
     spec:
       serviceAccount: hcloud-csi-node
+      priorityClassName: system-cluster-critical
+      tolerations:
+        - operator: Exists
       containers:
         - name: csi-node-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
@@ -230,6 +251,9 @@ spec:
               mountPath: /registration
           securityContext:
             privileged: true
+          resources:
+            requests:
+              memory: 5Mi
         - name: hcloud-csi-driver
           image: hetznercloud/hcloud-csi-driver:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
@@ -267,6 +291,9 @@ spec:
             initialDelaySeconds: 10
             timeoutSeconds: 3
             periodSeconds: 2
+          resources:
+            requests:
+              memory: 10Mi
         - name: liveness-probe
           imagePullPolicy: Always
           image: quay.io/k8scsi/livenessprobe:v1.1.0
@@ -275,6 +302,9 @@ spec:
           volumeMounts:
             - mountPath: /csi
               name: plugin-dir
+          resources:
+            requests:
+              memory: 5Mi
       volumes:
         - name: kubelet-dir
           hostPath:
