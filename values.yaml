@@ -1,1 +1,5 @@
 apiToken: ""
+defaultStorageClass: false
+prometheus:
+  serviceMonitor:
+    enabled: false
