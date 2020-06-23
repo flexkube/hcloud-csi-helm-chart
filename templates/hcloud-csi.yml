@@ -227,10 +227,15 @@ spec:
       labels:
         app: hcloud-csi
     spec:
-      serviceAccount: hcloud-csi-node
       priorityClassName: system-cluster-critical
       tolerations:
-        - operator: Exists
+        - effect: NoExecute
+          operator: Exists
+        - effect: NoSchedule
+          operator: Exists
+        - key: CriticalAddonsOnly
+          operator: Exists
+      serviceAccount: hcloud-csi-node
       containers:
         - name: csi-node-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.3.0
@@ -336,6 +341,7 @@ spec:
     - port: 9189
       name: metrics
       targetPort: metrics
+
 ---
 apiVersion: v1
 kind: Service
