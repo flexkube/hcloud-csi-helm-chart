@@ -1,4 +1,4 @@
-# Imported from https://raw.githubusercontent.com/hetznercloud/csi-driver/v1.3.1/deploy/kubernetes/hcloud-csi.yml.
+# Imported from https://raw.githubusercontent.com/hetznercloud/csi-driver/v1.5.1/deploy/kubernetes/hcloud-csi.yml
 ---
 apiVersion: storage.k8s.io/v1
 kind: CSIDriver
@@ -176,6 +176,11 @@ spec:
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
             - name: METRICS_ENDPOINT
               value: 0.0.0.0:9189
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
             - name: HCLOUD_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -288,6 +293,11 @@ spec:
                 secretKeyRef:
                   name: hcloud-csi
                   key: token
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
           volumeMounts:
             - name: kubelet-dir
               mountPath: /var/lib/kubelet
