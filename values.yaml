@@ -3,3 +3,6 @@ defaultStorageClass: false
 prometheus:
   serviceMonitor:
     enabled: false
+controller:
+  replicas: 1
+  nodeSelector: {}

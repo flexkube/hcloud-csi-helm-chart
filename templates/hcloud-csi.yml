@@ -101,7 +101,7 @@ spec:
   selector:
     matchLabels:
       app: hcloud-csi-controller
-  replicas: 1
+  replicas: {{ .Values.controller.replicas }}
   template:
     metadata:
       labels:
@@ -111,6 +111,8 @@ spec:
       priorityClassName: system-node-critical
       tolerations:
         - operator: Exists
+      nodeSelector:
+        {{- toYaml .Values.controller.nodeSelector | trim | nindent 8 }}
       containers:
         - name: csi-attacher
           image: k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
@@ -172,8 +174,9 @@ spec:
             limits:
               memory: 50Mi
         - name: hcloud-csi-driver
-          image: hetznercloud/hcloud-csi-driver:{{ .Chart.AppVersion }}
+          image: hetznercloud/hcloud-csi-driver:v{{ .Chart.AppVersion }}
           imagePullPolicy: Always
+          command: [/bin/hcloud-csi-driver-controller]
           env:
             - name: CSI_ENDPOINT
               value: unix:///run/csi/socket
@@ -296,8 +299,9 @@ spec:
             limits:
               memory: 50Mi
         - name: hcloud-csi-driver
-          image: hetznercloud/hcloud-csi-driver:{{ .Chart.AppVersion }}
+          image: hetznercloud/hcloud-csi-driver:v{{ .Chart.AppVersion }}
           imagePullPolicy: Always
+          command: [/bin/hcloud-csi-driver-node]
           env:
             - name: CSI_ENDPOINT
               value: unix:///run/csi/socket
