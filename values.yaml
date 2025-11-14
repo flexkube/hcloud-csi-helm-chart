@@ -6,3 +6,11 @@ prometheus:
 controller:
   replicas: 1
   nodeSelector: {}
+  tolerations:
+  - operator: Exists
+node:
+  tolerations:
+  - effect: NoExecute
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
